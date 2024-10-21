@@ -32,6 +32,9 @@ final class Artwork: Model, Content, @unchecked Sendable {
     @Field(key: "country" )
     var country: String?
     
+    @Field(key: "date" )
+    var date: String?
+    
     @Field(key: "latitude" )
     var latitude: Double?
     

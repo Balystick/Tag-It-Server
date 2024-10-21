@@ -6,7 +6,7 @@ import Vapor
 // configures your application
 public func configure(_ app: Application) async throws {
 
-app.http.server.configuration.port = 8081
+app.http.server.configuration.port = 8080
 
 app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
