@@ -16,6 +16,7 @@ struct ArtworkController: RouteCollection {
             
             artworks.group(":artworkID") { artwork in
                 artwork.get(use: self.getArtworkByID)
+                artwork.delete(use: self.deleteArtworkByID)
             }
             
             @Sendable
@@ -39,5 +40,15 @@ extension ArtworkController {
             throw Abort(.notFound, reason: "Artwork doesn't exist.")
         }
         return artwork
+    }
+    
+    @Sendable
+    func deleteArtworkByID(req: Request) async throws -> HTTPStatus {
+        guard let artwork = try await Artwork.find(req.parameters.get("artworkID"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        try await artwork.delete(on: req.db)
+        
+        return .noContent
     }
 }
