@@ -17,34 +17,34 @@ final class Artwork: Model, Content, @unchecked Sendable {
     @Field(key: "title")
     var title: String?
     
-    @Field(key: "image" )
+    @Field(key: "image")
     var image: String?
     
-    @Field(key: "type" )
+    @Field(key: "type")
     var type: String?
     
-    @Field(key: "address" )
+    @Field(key: "address")
     var address: String?
     
-    @Field(key: "city" )
+    @Field(key: "city")
     var city: String?
     
-    @Field(key: "country" )
+    @Field(key: "country")
     var country: String?
     
-    @Field(key: "date" )
+    @Field(key: "date")
     var date: String?
     
-    @Field(key: "latitude" )
+    @Field(key: "latitude")
     var latitude: Double?
     
-    @Field(key: "longitude" )
+    @Field(key: "longitude")
     var longitude: Double?
     
-    @Field(key: "points" )
+    @Field(key: "points")
     var points: String?
     
-    @Field(key: "id_artist" )
+    @Field(key: "id_artist")
     var id_artist: UUID?
 
     init() { }
