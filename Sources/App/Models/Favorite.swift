@@ -23,4 +23,6 @@ final class Favorite: Model, Content, @unchecked Sendable  {
 
     @Field(key: "id_user")
     var id_user: UUID?
+    
+    init() { }
 }

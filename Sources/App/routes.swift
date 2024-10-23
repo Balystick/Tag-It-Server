@@ -12,4 +12,6 @@ func routes(_ app: Application) throws {
 
     try app.register(collection: ArtworkController())
     try app.register(collection: FavoriteController())
+    try app.register(collection: UserController())
+
 }

@@ -4,26 +4,32 @@
 //
 //  Created by Aurélien on 21/10/2024.
 //
-import Vapor
 import Fluent
+import Vapor
 
-final class User: Model, Content {
+final class User: Model, Content, @unchecked Sendable {
     static let schema = "users"
     
     @ID(key: .id)
     var id: UUID?
     
+    @Field(key: "username")
+    var username: String
+    
     @Field(key: "name")
     var name: String
     
-    @Field(key: "profile_image")
-    var profileImage: String?
-
-    init() {}
+    @Field(key: "image")
+    var image: String
     
-    init(id: UUID? = nil, name: String, profileImage: String? = nil) {
-        self.id = id
-        self.name = name
-        self.profileImage = profileImage
-    }
+    @Field(key: "email")
+    var email: String
+    
+    @Field(key: "password")
+    var password: String
+    
+    @Field(key: "points")
+    var points: Int
+    
+    init() {}
 }
