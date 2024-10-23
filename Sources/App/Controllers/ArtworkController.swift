@@ -17,7 +17,9 @@ struct ArtworkController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [Artwork] {
-            return try await Artwork.query(on: req.db).all()
+            return try await Artwork.query(on: req.db)
+            .sort(\.$date, .descending)
+            .all()
     }
     
     @Sendable
