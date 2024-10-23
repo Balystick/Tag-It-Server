@@ -7,33 +7,38 @@
 
 import Vapor
 import Fluent
+import FluentSQL
 
 struct ArtworkController: RouteCollection {
-        func boot(routes: RoutesBuilder) throws {
-            let artworks = routes.grouped("artworks")
-            artworks.get(use: index)
-            artworks.post(use: create)
-            
-            artworks.group(":artworkID") { artwork in
-                artwork.get(use: self.getArtworkByID)
-                artwork.delete(use: self.deleteArtworkByID)
-            }
-            
-            @Sendable
-            func index(req: Request) async throws -> [Artwork] {
-                return try await Artwork.query(on: req.db).all()
-            }
-            
-            @Sendable
-            func create(req: Request) async throws -> Artwork {
-                let artworks = try req.content.decode(Artwork.self)
-                try await artworks.save(on: req.db)
-                return artworks
+    func boot(routes: RoutesBuilder) throws {
+        let artworks = routes.grouped("artworks")
+        artworks.get(use: getArtworks)
+        artworks.post(use: createArtwork)
+        
+        artworks.group(":artworkID") { artwork in
+            artwork.get(use: self.getArtworkByID)
+            artwork.delete(use: self.deleteArtworkByID)
         }
     }
 }
 
 extension ArtworkController {
+    @Sendable
+    func getArtworks(req: Request) async throws -> [Artwork] {
+        if let sql = req.db as? SQLDatabase {
+            let artworks = try await sql.raw("SELECT artworks.*, artists.name AS artist_name FROM artworks JOIN artists ON id_artist = artists.id").all(decodingFluent: Artwork.self)
+            return artworks
+        }
+        throw Abort(.internalServerError, reason: "It's not a SQL database.")
+    }
+    
+    @Sendable
+    func createArtwork(req: Request) async throws -> Artwork {
+        let artwork = try req.content.decode(Artwork.self)
+        try await artwork.save(on: req.db)
+        return artwork
+    }
+    
     @Sendable
     func getArtworkByID(req: Request) async throws -> Artwork {
         guard let artwork = try await Artwork.find(req.parameters.get("artworkID"), on: req.db) else {
