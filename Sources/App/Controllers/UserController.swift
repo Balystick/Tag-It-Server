@@ -37,7 +37,6 @@ struct UserController: RouteCollection {
             guard let user = try await User.find(userId, on: req.db) else {
                 throw Abort(.notFound, reason: "Utilisateur non trouvé.")
             }
-            // Mise à jour des propriétés
             user.username = updatedUser.username
             user.name = updatedUser.name
             user.email = updatedUser.email

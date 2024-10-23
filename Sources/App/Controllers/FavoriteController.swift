@@ -11,12 +11,19 @@ import Fluent
 struct FavoriteController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let favorites = routes.grouped("favorites")
+        favorites.get(use: getFavoritesByUser)
         favorites.post(use: create)
+        favorites.delete(":favoriteID", use: delete)
     }
     
     @Sendable
-    func index(req: Request) async throws -> [Favorite] {
-            return try await Favorite.query(on: req.db).all()
+    func getFavoritesByUser(req: Request) async throws -> [Favorite] {
+        guard let userID = req.query[UUID.self, at: "id_user"] else {
+            throw Abort(.badRequest, reason: "id_user manquant")
+        }
+        return try await Favorite.query(on: req.db)
+            .filter(\.$id_user == userID)
+            .all()
     }
     
     @Sendable
@@ -28,10 +35,14 @@ struct FavoriteController: RouteCollection {
     
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
-        guard let favorite = try await
-                Favorite.find(req.parameters.get("favoriteID"), on: req.db) else {
+        guard let favoriteID = req.parameters.get("favoriteID", as: UUID.self) else {
+            throw Abort(.badRequest, reason: "ID du favori invalide")
+        }
+        
+        guard let favorite = try await Favorite.find(favoriteID, on: req.db) else {
             throw Abort(.notFound)
         }
+        
         try await favorite.delete(on: req.db)
         return .noContent
     }
