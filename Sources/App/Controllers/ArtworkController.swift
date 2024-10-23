@@ -53,7 +53,6 @@ extension ArtworkController {
             throw Abort(.notFound)
         }
         try await artwork.delete(on: req.db)
-        
         return .noContent
     }
 }
