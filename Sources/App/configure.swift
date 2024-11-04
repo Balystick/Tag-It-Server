@@ -8,6 +8,9 @@ public func configure(_ app: Application) async throws {
 
 app.http.server.configuration.port = 8080
 
+// Décommenter pour un accès externe
+//app.http.server.configuration.hostname = "0.0.0.0"
+
 app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
 app.databases.use(DatabaseConfigurationFactory.mysql(
