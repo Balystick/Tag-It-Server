@@ -13,7 +13,7 @@ struct UserController: RouteCollection {
         let users = routes.grouped("users")
         users.post(use: self.createUser)
         
-//        users.get(":userId", use: getUserById)
+        users.get(":userId", use: getUserById)
 //        users.put(":userId", use: updateUserById)
     }
 }
@@ -47,15 +47,11 @@ extension UserController {
     }
     
     @Sendable
-    func getUserById(req: Request) async throws -> User {
-        guard let userId = req.parameters.get("userId", as: UUID.self) else {
-            throw Abort(.badRequest, reason: "Invalid UUID format")
-        }
-        
-        guard let user = try await User.find(userId, on: req.db) else {
+    func getUserById(req: Request) async throws -> UserDTO {
+        guard let user = try await User.find(req.parameters.get("userId", as: UUID.self), on: req.db) else {
             throw Abort(.notFound, reason: "User not found")
         }
-        return user
+        return user.toDTO()
     }
     
     @Sendable
