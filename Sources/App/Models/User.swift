@@ -7,7 +7,7 @@
 import Fluent
 import Vapor
 
-final class User: Model, Content, @unchecked Sendable {
+final class User: Model, @unchecked Sendable {
     static let schema = "users"
     
     @ID(key: .id)
@@ -52,5 +52,14 @@ final class User: Model, Content, @unchecked Sendable {
             email: self.$email.value,
             points: self.$points.value
         )
+    }
+}
+
+extension User: ModelAuthenticatable {
+    static let usernameKey = \User.$email
+    static let passwordHashKey = \User.$password
+
+    func verify(password: String) throws -> Bool {
+        try Bcrypt.verify(password, created: self.password)
     }
 }
