@@ -13,8 +13,19 @@ struct UserController: RouteCollection {
         let users = routes.grouped("users")
         users.post(use: self.createUser)
         
-        users.get(":userId", use: getUserById)
-//        users.put(":userId", use: updateUserById)
+        let basicAuthMiddleware = User.authenticator()
+        let guardAuthMiddleware = User.guardMiddleware()
+        let authGroup = users.grouped(basicAuthMiddleware, guardAuthMiddleware)
+        
+        let tokenAuthMiddleware = TokenSession.authenticator()
+        let guardTokenMiddleware = TokenSession.guardMiddleware()
+        let token = users.grouped(tokenAuthMiddleware, guardTokenMiddleware)
+
+        users.post(use: self.createUser)
+//        authGroup.post(use: self.login)
+        
+        token.get(":userId", use: getUserById)
+        token.put(":userId", use: updateUserById)
     }
 }
 
@@ -22,8 +33,6 @@ extension UserController {
     @Sendable
     func createUser(req: Request) async throws -> UserDTO {
         let create = try req.content.decode(User.self)
-        
-        print(create)
 
         guard try await User.query(on: req.db).filter(\.$email == create.email).first() == nil else {
             throw Abort(.conflict, reason: "An account with this email already exists.")
@@ -55,21 +64,25 @@ extension UserController {
     }
     
     @Sendable
-    func updateUserById(req: Request) async throws -> User {
+    func updateUserById(req: Request) async throws -> UserDTO {
         guard let userIDString = req.parameters.get("userId"),
               let userId = UUID(uuidString: userIDString) else {
             throw Abort(. badRequest, reason: "ID d'utilisateur invalide.")
         }
+        
         let updatedUser = try req.content.decode(User.self)
+        
         guard let user = try await User.find(userId, on: req.db) else {
             throw Abort(.notFound, reason: "Utilisateur non trouvé.")
         }
+        
         user.username = updatedUser.username
         user.name = updatedUser.name
         user.email = updatedUser.email
         user.password = updatedUser.password
         user.points = updatedUser.points
+        
         try await user.save(on: req.db)
-        return user
+        return user.toDTO()
     }
 }
