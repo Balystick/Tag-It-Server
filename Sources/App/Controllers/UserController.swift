@@ -11,7 +11,6 @@ import Fluent
 struct UserController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let users = routes.grouped("users")
-        users.post(use: self.createUser)
         
         let basicAuthMiddleware = User.authenticator()
         let guardAuthMiddleware = User.guardMiddleware()

@@ -13,7 +13,9 @@ struct ArtistController: RouteCollection {
         let artists = routes.grouped("artists")
         artists.get(use: index)
     }
-    
+}
+
+extension ArtistController {
     @Sendable
     func index(req: Request) async throws -> [Artist] {
         return try await Artist.query(on: req.db)

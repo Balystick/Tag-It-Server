@@ -12,8 +12,7 @@ import FluentSQL
 struct ArtworkController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let artworks = routes.grouped("artworks")
-        artworks.get(use: index)
-//        artworks.get(use: getArtworks)
+        artworks.get(use: getArtworks)
         artworks.post(use: createArtwork)
         
         artworks.group(":artworkID") { artwork in
@@ -25,16 +24,9 @@ struct ArtworkController: RouteCollection {
 
 extension ArtworkController {
     @Sendable
-    func index(req: Request) async throws -> [Artwork] {
-        return try await Artwork.query(on: req.db)
-            .sort(\.$date, .descending)
-            .all()
-    }
-    
-    @Sendable
     func getArtworks(req: Request) async throws -> [Artwork] {
         if let sql = req.db as? SQLDatabase {
-            let artworks = try await sql.raw("SELECT artworks.*, artists.name AS artist_name FROM artworks JOIN artists ON id_artist = artists.id").all(decodingFluent: Artwork.self)
+            let artworks = try await sql.raw("SELECT artworks.*, artists.name AS artist_name FROM artworks JOIN artists ON id_artist = artists.id ORDER BY date DESC").all(decodingFluent: Artwork.self)
             return artworks
         }
         throw Abort(.internalServerError, reason: "It's not a SQL database.")

@@ -46,6 +46,9 @@ final class Artwork: Model, Content, @unchecked Sendable {
     
     @Field(key: "id_artist")
     var id_artist: UUID?
+    
+    @Field(key: "artist_name")
+    var artist_name: String?
 
     init() { }
 }

@@ -15,7 +15,9 @@ struct FavoriteController: RouteCollection {
         favorites.post(use: create)
         favorites.delete(":favoriteID", use: delete)
     }
-    
+}
+
+extension FavoriteController {
     @Sendable
     func getFavoritesByUser(req: Request) async throws -> [Favorite] {
         guard let userID = req.query[UUID.self, at: "id_user"] else {
