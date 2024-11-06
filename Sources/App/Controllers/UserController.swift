@@ -22,7 +22,7 @@ struct UserController: RouteCollection {
         let token = users.grouped(tokenAuthMiddleware, guardTokenMiddleware)
 
         users.post(use: self.createUser)
-//        authGroup.post(use: self.login)
+        authGroup.post("login", use: self.login)
         
         token.get(":userId", use: getUserById)
         token.put(":userId", use: updateUserById)
@@ -53,6 +53,15 @@ extension UserController {
         try await user.save(on: req.db)
 
         return user.toDTO()
+    }
+    
+    @Sendable
+    func login(req: Request) async throws -> [String:String] {
+        let user = try req.auth.require(User.self)
+        let payload = try TokenSession(with: user)
+        let token = try await req.jwt.sign(payload)
+
+        return ["token": token]
     }
     
     @Sendable
