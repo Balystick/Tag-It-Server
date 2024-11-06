@@ -23,7 +23,8 @@ struct UserController: RouteCollection {
         users.post(use: self.createUser)
         authGroup.post("login", use: self.login)
         
-        token.get(":userId", use: getUserById)
+        users.get(":userId", use: getUserById) // Test
+//        token.get(":userId", use: getUserById)
         token.put(":userId", use: updateUserById)
     }
 }
