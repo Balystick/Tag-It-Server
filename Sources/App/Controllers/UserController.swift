@@ -31,7 +31,7 @@ struct UserController: RouteCollection {
 
 extension UserController {
     @Sendable
-    func createUser(req: Request) async throws -> UserDTO {
+    func createUser(req: Request) async throws -> [String:String] {
         let create = try req.content.decode(User.self)
 
         guard try await User.query(on: req.db).filter(\.$email == create.email).first() == nil else {
@@ -51,8 +51,11 @@ extension UserController {
             points: create.points
         )
         try await user.save(on: req.db)
+        
+        let payload = try TokenSession(with: user)
+        let token = try await req.jwt.sign(payload)
 
-        return user.toDTO()
+        return ["token": token]
     }
     
     @Sendable
