@@ -26,6 +26,7 @@ struct UserController: RouteCollection {
         users.get(":userId", use: getUserById) // Test
 //        token.get(":userId", use: getUserById)
         token.put(":userId", use: updateUserById)
+        token.get("me", use: getUserFromToken)
     }
 }
 
@@ -96,5 +97,11 @@ extension UserController {
         
         try await user.save(on: req.db)
         return user.toDTO()
+    }
+    
+    @Sendable
+    func getUserFromToken(req: Request) throws -> EventLoopFuture<UserDTO> {
+        let user = try req.auth.require(User.self)
+        return req.eventLoop.makeSucceededFuture(user.toDTO())
     }
 }
