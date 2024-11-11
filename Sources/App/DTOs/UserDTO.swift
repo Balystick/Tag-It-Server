@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  UserDTO.swift
 //  Tag-It-Server
 //
 //  Created by Apprenant 124 on 05/11/2024.

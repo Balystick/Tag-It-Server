@@ -1,5 +1,5 @@
 //
-//  Artwork.swift
+//  Artist.swift
 //  Tag-It-Server
 //
 //  Created by Aurélien on 17/10/2024.

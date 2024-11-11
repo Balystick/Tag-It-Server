@@ -16,6 +16,10 @@ struct ArtistController: RouteCollection {
 }
 
 extension ArtistController {
+    /// Cette méthode traite les requêtes `GET /artists` et renvoie une liste de tous les artistes, triée par nom dans l'ordre croissant.
+    /// - Parameter req: La requête entrante.
+    /// - Returns: Une liste de tous les objets `Artist` dans la base de données, triés par nom.
+    /// - Throws: Une erreur si la récupération des artistes échoue.
     @Sendable
     func index(req: Request) async throws -> [Artist] {
         return try await Artist.query(on: req.db)
